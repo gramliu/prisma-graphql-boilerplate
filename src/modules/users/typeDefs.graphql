@@ -1,0 +1,23 @@
+type Address {
+  street: String
+  city: String
+  country: String
+}
+
+type User {
+  _id: ID
+  email: String
+  password: String
+  name: String
+  posts: [Post]
+  address: Address
+}
+
+extend type Query {
+  auth_token(email: String!, password: String!): String
+  current_user: User
+}
+
+extend type Mutation {
+  register(email: String!, password: String!, name: String, address: Address): Boolean
+}
