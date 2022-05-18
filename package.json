@@ -2,7 +2,7 @@
   "name": "prisma-graphql-boilerplate",
   "scripts": {
     "start": "node dist/server",
-    "build": "rm -rf dist || tsc --build tsconfig.json && copyfiles -u 1 **/*.graphql dist",
+    "build": "rm -rf dist; tsc --build tsconfig.json && copyfiles -u 1 **/*.graphql dist",
     "dev": "ts-node-dev --no-notify --respawn --transpile-only src/index.ts",
     "generate": "prisma generate"
   },

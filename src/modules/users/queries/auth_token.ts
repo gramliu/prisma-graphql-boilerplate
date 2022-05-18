@@ -1,42 +1,36 @@
-import { AuthenticationError, UserInputError } from "apollo-server-errors"
-import { compare } from "bcrypt"
-import { generateJWT } from "../../../utils/verifyJWT"
-import { Context } from "../../../_types/context"
-import { User } from "../../../_types/user"
+import { Context } from '@src/context'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { compare } from 'bcrypt'
+import { generateJWT } from '../util/jwt'
 
 /**
- * Login a user
+ * Login a user and retrieve a JWT authentication token
  */
 export default async (
   _root: undefined,
   {
     email,
     password,
-    username,
   }: {
     email?: string
     password: string
-    username?: string
   },
-  context: Context
+  context: Context,
 ): Promise<string> => {
-  let user: User
-  if (email) {
-    user = await context.database.users.findOne({ email })
-  } else if (username) {
-    user = await context.database.users.findOne({ username })
-  } else {
-    throw new UserInputError("Must specify either email or username!")
+  const user = await context.prisma.user.findUnique({
+    where: {
+      email,
+    },
+  })
+
+  if (user == null) {
+    throw new UserInputError('User not found')
   }
 
-  if (!user) {
-    throw new UserInputError("User not found!")
+  const isValidPassword = await compare(password, user.password)
+  if (!isValidPassword) {
+    throw new AuthenticationError('Invalid password')
   }
 
-  const valid = await compare(password, user.password)
-  if (!valid) {
-    throw new AuthenticationError("Incorrect password!")
-  }
-
-  return generateJWT(user._id.toHexString())
+  return generateJWT(user.id)
 }

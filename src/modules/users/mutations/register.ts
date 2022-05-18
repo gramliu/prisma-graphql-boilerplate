@@ -1,6 +1,7 @@
 import { UserInputError } from 'apollo-server-errors'
 import { hash } from 'bcrypt'
 import { Context } from '@src/context'
+import { generateJWT } from '../util/jwt'
 
 /**
  * Register a new user
@@ -23,7 +24,7 @@ export default async (
     }
   },
   context: Context,
-): Promise<boolean> => {
+): Promise<string> => {
   const existingUser = await context.prisma.user.findFirst({
     where: { email },
   })
@@ -33,21 +34,14 @@ export default async (
   }
 
   const passwordHash = await hash(password, 10)
-  try {
-    const prismaUser = await context.prisma.user.create({
-      data: {
-        email,
-        password: passwordHash,
-        name,
-        address,
-      },
-    })
+  const user = await context.prisma.user.create({
+    data: {
+      email,
+      password: passwordHash,
+      name,
+      address,
+    },
+  })
 
-    const user = User(prismaUser)
-
-    return true;
-  } catch (err) {
-    console.error(err)
-    return false
-  }
+  return generateJWT(user.id)
 }

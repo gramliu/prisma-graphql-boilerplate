@@ -14,10 +14,10 @@ type User {
 }
 
 extend type Query {
-  auth_token(email: String!, password: String!): String
+  auth_token(email: String!, password: String!): String!
   current_user: User
 }
 
 extend type Mutation {
-  register(email: String!, password: String!, name: String, address: Address): Boolean
+  register(email: String!, password: String!, name: String, address: Address): String!
 }
