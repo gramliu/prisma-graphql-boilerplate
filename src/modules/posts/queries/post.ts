@@ -24,7 +24,5 @@ export default async (
     },
   })
 
-  console.log(post)
-
   return post
 }
