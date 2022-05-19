@@ -1,7 +1,7 @@
 import express, { Request } from 'express'
 import 'graphql-import-node'
 import dotenv from 'dotenv'
-import { Context, context } from './context'
+import { Context } from './context'
 import { ApolloServer } from 'apollo-server-express'
 import { typeDefs, resolvers } from './modules'
 import { verifyJWT } from './modules/users/util/jwt'
