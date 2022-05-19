@@ -6,6 +6,12 @@ import { ApolloServer } from 'apollo-server-express'
 import { typeDefs, resolvers } from './modules'
 import { verifyJWT } from './modules/users/util/jwt'
 import { GraphQLError } from 'graphql'
+import { PrismaClient } from '@prisma/client'
+
+// Load environment
+dotenv.config()
+const PORT = process.env.PORT || 4000
+const prisma = new PrismaClient()
 
 /**
  * Create a new context, given an incoming HTTP request
@@ -14,24 +20,20 @@ import { GraphQLError } from 'graphql'
  */
 function contextCreator({ req }: { req: Request }): Context {
   const headers = req?.headers
-  const newContext = { ...context, headers } as Context
+  const context = { prisma, headers } as Context
 
   if (headers && headers['x-access-token']) {
     // Extract id from JWT, if present
     const accessToken = headers['x-access-token'] as string
     const id = verifyJWT(accessToken)?.id
-    newContext['currentUserId'] = id
+    context.currentUserId = id
   }
 
   return context
 }
 
-// Load environment
-dotenv.config()
-const PORT = process.env.PORT || 4000
-
 async function main() {
-  await context.prisma.$connect()
+  await prisma.$connect()
 
   const app = express()
 
@@ -55,5 +57,5 @@ async function main() {
 main()
   .catch(console.error)
   .finally(async () => {
-    await context.prisma.$disconnect()
+    await prisma.$disconnect()
   })
