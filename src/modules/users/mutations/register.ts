@@ -12,19 +12,20 @@ export default async (
     email,
     password,
     name,
-    address,
+    street,
+    city,
+    country,
   }: {
     email: string
     password: string
     name?: string
-    address?: {
-      street: string
-      city: string
-      country: string
-    }
+    street: string
+    city: string
+    country: string
   },
   context: Context,
 ): Promise<string> => {
+  // Check if the user already exists
   const existingUser = await context.prisma.user.findFirst({
     where: { email },
   })
@@ -33,15 +34,21 @@ export default async (
     throw new UserInputError('Email already in use')
   }
 
+  // Hash the password
   const passwordHash = await hash(password, 10)
   const user = await context.prisma.user.create({
     data: {
       email,
       password: passwordHash,
       name,
-      address,
+      address: {
+        street,
+        city,
+        country,
+      },
     },
   })
 
+  // Generate a JWT
   return generateJWT(user.id)
 }

@@ -9,9 +9,9 @@
     "esModuleInterop": true,
     "baseUrl": "./src",
     "paths": {
-      "@src/*": ["./*"],
+      "@src/*": ["./*"]
     }
   },
   "baseUrl": "./src",
-  "include": ["src/**/*"],
+  "include": ["src/**/*"]
 }

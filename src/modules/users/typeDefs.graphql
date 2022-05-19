@@ -1,16 +1,18 @@
 type Address {
-  street: String
-  city: String
-  country: String
+  street: String!
+  city: String!
+  country: String!
 }
 
 type User {
-  _id: ID
-  email: String
-  password: String
+  id: ID!
+  email: String!
+  password: String!
   name: String
   posts: [Post]
   address: Address
+  createdAt: Date!
+  updatedAt: Date
 }
 
 extend type Query {
@@ -19,5 +21,12 @@ extend type Query {
 }
 
 extend type Mutation {
-  register(email: String!, password: String!, name: String, address: Address): String!
+  register(
+    email: String!
+    password: String!
+    name: String
+    street: String
+    city: String
+    country: String
+  ): String!
 }

@@ -10,9 +10,11 @@ export default async (
   _args: undefined,
   context: Context,
 ): Promise<User> => {
+  // Assert that the user is authenticated
   if (context.currentUserId == null) {
     throw new AuthenticationError('Missing authentication token')
   } else {
+    // Find the user associated with the current user id
     const user = await context.prisma.user.findUnique({
       where: { id: context.currentUserId },
     })

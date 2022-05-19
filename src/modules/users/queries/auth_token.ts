@@ -17,6 +17,7 @@ export default async (
   },
   context: Context,
 ): Promise<string> => {
+  // Search for the user
   const user = await context.prisma.user.findUnique({
     where: {
       email,
@@ -27,10 +28,12 @@ export default async (
     throw new UserInputError('User not found')
   }
 
+  // Check if the password is correct
   const isValidPassword = await compare(password, user.password)
   if (!isValidPassword) {
     throw new AuthenticationError('Invalid password')
   }
 
+  // Generate a JWT
   return generateJWT(user.id)
 }

@@ -7,21 +7,22 @@ datasource db {
   url      = env("DB_URI")
 }
 
+type Address {
+  street  String?
+  city    String?
+  country String?
+}
+
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
   password  String
   name      String?
   posts     Post[]
   address   Address?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-type Address {
-  street  String
-  city    String
-  country String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Comment   Comment[]
 }
 
 model Post {
@@ -39,7 +40,9 @@ model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id])
   postId    String   @db.ObjectId
-  comment   String
+  text   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
